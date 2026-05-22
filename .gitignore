@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.json
+!events.json
+!.gitignore
+.monitor_state.json
