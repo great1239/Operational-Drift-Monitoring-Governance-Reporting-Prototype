@@ -112,18 +112,6 @@ python event_stream_generator.py --output data/stream_events.json
 
 Stop the continuous stream with `Ctrl+C`.
 
-Useful generator options:
-
-- `--interval-seconds 1`: average delay between event batches
-- `--jitter-seconds 0.2`: random variation around that delay
-- `--drift-rate 0.15`: chance that an event contains a drift condition
-- `--burst-chance 0.2`: chance that one interval emits several events
-- `--max-burst-events 5`: largest burst size
-- `--seed 42`: repeat the same simulated sequence
-- `--reset`: overwrite the output file before generating new events
-
-
-
 ## Scheduled Runs
 
 Use Windows Task Scheduler or another scheduler to run the monitor regularly.
