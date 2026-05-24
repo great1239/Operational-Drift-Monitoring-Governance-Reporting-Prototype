@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Operational Drift Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+<main class="page">
+  
+  <div class="header">
+    <div>
+      <div class="eyebrow">Operational Intelligence</div>
+      <h1>Drift Dashboard</h1>
+      <p class="subtle">Latest event: 2026-05-24T19:01:42.770336Z</p>
+    </div>
+    <span class="badge bad">Operational intelligence held: no</span>
+  </div>
+
+  <div class="grid">
+    <div class="card"><div class="label">Events Checked</div><div class="value">150</div></div>
+    <div class="card"><div class="label">Drift Events</div><div class="value">25</div></div>
+    <div class="card"><div class="label">Average Score</div><div class="value">96.37</div></div>
+    <div class="card"><div class="label">Runtime</div><div class="value">0.0012s</div></div>
+  </div>
+
+  <h2>5-Line Governance Summary</h2>
+  <ol class="summary"><li><strong class="summary-heading">Status:</strong> operational intelligence held = no.</li>
+<li><strong class="summary-heading">Pressure:</strong> 50 -&gt; 150 events (increased).</li>
+<li><strong class="summary-heading">Drift:</strong><div class="summary-lines"><span>aligned=125</span>
+<span>replay-risk=1</span>
+<span>authority-risk=6</span>
+<span>observability-risk=4</span>
+<span>integration-risk=8</span>
+<span>unclear/incomplete=6</span></div></li>
+<li><strong class="summary-heading">Risk:</strong> primary risk labels = replay-risk, authority-risk, observability-risk, integration-risk, unclear/incomplete.</li>
+<li><strong class="summary-heading">Action:</strong><div class="summary-lines"><span><strong>importance</strong> authority-risk: lock approval and authorization checks before execution</span><span><strong>frequency</strong> integration-risk: resolve blockers and dependency ownership</span></div></li></ol>
+
+  <h2>Pressure Comparison</h2>
+  
+  <p class="note">
+    Pressure trend: increased.
+    Events checked: 50 -> 150.
+    Stable under increased pressure: no.
+  </p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Metric</th><th>Previous</th><th>Current</th><th>Delta</th></tr>
+      <tr><td>structured</td><td>96.00%</td><td>96.00%</td><td><span class="badge neutral">+0.00%</span></td></tr>
+<tr><td>observable</td><td>98.00%</td><td>97.33%</td><td><span class="badge bad">-0.67%</span></td></tr>
+<tr><td>deterministic</td><td>100.00%</td><td>99.33%</td><td><span class="badge bad">-0.67%</span></td></tr>
+<tr><td>governance-safe</td><td>100.00%</td><td>96.00%</td><td><span class="badge bad">-4.00%</span></td></tr>
+    </table>
+  </div>
+
+
+  <h2>Metric Pass Rates</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Metric</th><th>Pass Rate</th><th>Failures</th></tr>
+      <tr><td>structured</td><td class="metric-cell"><div class="metric-top"><strong>96.00%</strong><span class="badge ok">stable</span></div><progress class="metric-progress ok" value="96.00" max="100">96.00%</progress></td><td>6</td></tr>
+<tr><td>observable</td><td class="metric-cell"><div class="metric-top"><strong>97.33%</strong><span class="badge ok">stable</span></div><progress class="metric-progress ok" value="97.33" max="100">97.33%</progress></td><td>4</td></tr>
+<tr><td>deterministic</td><td class="metric-cell"><div class="metric-top"><strong>99.33%</strong><span class="badge ok">stable</span></div><progress class="metric-progress ok" value="99.33" max="100">99.33%</progress></td><td>1</td></tr>
+<tr><td>governance-safe</td><td class="metric-cell"><div class="metric-top"><strong>96.00%</strong><span class="badge ok">stable</span></div><progress class="metric-progress ok" value="96.00" max="100">96.00%</progress></td><td>6</td></tr>
+    </table>
+  </div>
+
+  <h2>Drift Classification</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Classification</th><th>Count</th></tr>
+      <tr><td><span class="badge ok">aligned</span></td><td>125</td></tr>
+<tr><td><span class="badge warn">replay-risk</span></td><td>1</td></tr>
+<tr><td><span class="badge bad">authority-risk</span></td><td>6</td></tr>
+<tr><td><span class="badge blue">observability-risk</span></td><td>4</td></tr>
+<tr><td><span class="badge purple">integration-risk</span></td><td>8</td></tr>
+<tr><td><span class="badge neutral">unclear/incomplete</span></td><td>6</td></tr>
+    </table>
+  </div>
+
+  <h2>Event Findings</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Event</th><th>Score</th><th>Classification</th><th>Issues</th></tr>
+      <tr><td>UPD-000001</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000002</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000003</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000004</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000005</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000006</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000007</td><td><span class="badge bad">75</span></td><td><span class="badge blue">observability-risk</span></td><td class="issues">observability risk found in update</td></tr>
+<tr><td>UPD-000008</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000009</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000010</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000011</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000012</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000013</td><td><span class="badge bad">75</span></td><td><span class="badge neutral">unclear/incomplete</span></td><td class="issues">update is unclear or incomplete</td></tr>
+<tr><td>UPD-000014</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000015</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000016</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000017</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000018</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000019</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000020</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000021</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000022</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000023</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000024</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000025</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000026</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000027</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000028</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000029</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000030</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000031</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000032</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000033</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000034</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000035</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000036</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000037</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000038</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000039</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000040</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000041</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000042</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000043</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000044</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000045</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000046</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000047</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000048</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000049</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000050</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000051</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000052</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000053</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000054</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000055</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000056</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000057</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000058</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000059</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000060</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000061</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000062</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000063</td><td><span class="badge bad">75</span></td><td><span class="badge neutral">unclear/incomplete</span></td><td class="issues">update is unclear or incomplete</td></tr>
+<tr><td>UPD-000064</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000065</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000066</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000067</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000068</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000069</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000070</td><td><span class="badge bad">75</span></td><td><span class="badge bad">authority-risk</span></td><td class="issues">governance risk found in update</td></tr>
+<tr><td>UPD-000071</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000072</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000073</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000074</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000075</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000076</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000077</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000078</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000079</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000080</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000081</td><td><span class="badge bad">75</span></td><td><span class="badge neutral">unclear/incomplete</span></td><td class="issues">update is unclear or incomplete</td></tr>
+<tr><td>UPD-000082</td><td><span class="badge bad">75</span></td><td><span class="badge bad">authority-risk</span></td><td class="issues">governance risk found in update</td></tr>
+<tr><td>UPD-000083</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000084</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000085</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000086</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000087</td><td><span class="badge bad">75</span></td><td><span class="badge warn">replay-risk</span></td><td class="issues">replay risk found in update</td></tr>
+<tr><td>UPD-000088</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000089</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000090</td><td><span class="badge bad">75</span></td><td><span class="badge neutral">unclear/incomplete</span></td><td class="issues">update is unclear or incomplete</td></tr>
+<tr><td>UPD-000091</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000092</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000093</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000094</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000095</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000096</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000097</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000098</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000099</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000100</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000101</td><td><span class="badge bad">75</span></td><td><span class="badge bad">authority-risk</span></td><td class="issues">governance risk found in update</td></tr>
+<tr><td>UPD-000102</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000103</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000104</td><td><span class="badge bad">75</span></td><td><span class="badge neutral">unclear/incomplete</span></td><td class="issues">update is unclear or incomplete</td></tr>
+<tr><td>UPD-000105</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000106</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000107</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000108</td><td><span class="badge bad">75</span></td><td><span class="badge neutral">unclear/incomplete</span></td><td class="issues">update is unclear or incomplete</td></tr>
+<tr><td>UPD-000109</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000110</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000111</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000112</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000113</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000114</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000115</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000116</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000117</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000118</td><td><span class="badge bad">75</span></td><td><span class="badge blue">observability-risk</span></td><td class="issues">observability risk found in update</td></tr>
+<tr><td>UPD-000119</td><td><span class="badge bad">75</span></td><td><span class="badge bad">authority-risk</span></td><td class="issues">governance risk found in update</td></tr>
+<tr><td>UPD-000120</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000121</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000122</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000123</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000124</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000125</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000126</td><td><span class="badge bad">75</span></td><td><span class="badge blue">observability-risk</span></td><td class="issues">observability risk found in update</td></tr>
+<tr><td>UPD-000127</td><td><span class="badge bad">75</span></td><td><span class="badge blue">observability-risk</span></td><td class="issues">observability risk found in update</td></tr>
+<tr><td>UPD-000128</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000129</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000130</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000131</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000132</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000133</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000134</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000135</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000136</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000137</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000138</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000139</td><td><span class="badge bad">75</span></td><td><span class="badge bad">authority-risk</span></td><td class="issues">governance risk found in update</td></tr>
+<tr><td>UPD-000140</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000141</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000142</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000143</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000144</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000145</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000146</td><td><span class="badge bad">75</span></td><td><span class="badge bad">authority-risk</span></td><td class="issues">governance risk found in update</td></tr>
+<tr><td>UPD-000147</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000148</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+<tr><td>UPD-000149</td><td><span class="badge warn">85</span></td><td><span class="badge purple">integration-risk</span></td><td class="issues">blocker or dependency risk found in update</td></tr>
+<tr><td>UPD-000150</td><td><span class="badge ok">100</span></td><td><span class="badge ok">aligned</span></td><td class="issues">none</td></tr>
+    </table>
+  </div>
+
+</main>
+</body>
+</html>

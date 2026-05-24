@@ -11,27 +11,35 @@ The goal is to check whether operational intelligence can stay:
 
 when execution pressure changes.
 
-## Approach
+## What This Project Does
 
-Each scheduled run is treated as one batch of events.
+This project has two main parts:
 
-For each event, the monitor checks:
+1. `operational_update_parser.py`
+   - parses operational updates into structured fields
+   - extracts system status, blockers, dependencies, replay risks, observability risks, and governance risks
+   - assigns the required drift classification
 
-- are the important fields present?
-- is there evidence for the decision?
-- does the replayed action match the actual action?
-- were approvals and authorization followed?
+2. `operational_drift_monitor.py`
+   - evaluates raw updates, parsed updates, or structured event JSON
+   - compares each scheduled run with the previous run
+   - checks whether the four metrics stay stable when event count increases
+   - generates a simple HTML dashboard
 
-The basic flow is:
+## Drift Taxonomy
 
-event -> decision -> action -> evidence -> outcome
+The monitor uses these classifications:
 
-If information is missing, decisions are inconsistent, or approvals are skipped, the event is counted as drift.
-
+- `aligned`
+- `replay-risk`
+- `authority-risk`
+- `observability-risk`
+- `integration-risk`
+- `unclear/incomplete`
 
 ## How Pressure Is Compared
 
-The monitor remembers the previous run.
+Each scheduled run is treated as one batch.
 
 Example:
 
@@ -40,99 +48,161 @@ Example:
 12 PM run: 150 new events
 ```
 
-Since the new run has more events than the previous run, execution pressure increased.
+Since the second run has more events, execution pressure increased.
 
-The monitor then compares:
+The monitor compares:
 
 - structured %
 - observable %
 - deterministic %
 - governance-safe %
 
-If event count increased and any of those percentages dropped, operational intelligence did not remain stable under pressure.
+If event count increases and any percentage drops, operational intelligence did not remain stable under pressure.
 
-## Scoring
+## Run The Parser
 
-Each event gets a score out of 100.
+You do not have to run the parser separately for the normal demo.
+The monitor can read `updates.json` directly
 
-- missing required field: minus 5
-- missing evidence field: minus 10
-- replay action mismatch: minus 25
-- missing approval: minus 25
-- unauthorized actor: minus 25
-
-Rating:
-
-- 90-100: stable
-- 75-89: minor drift
-- 50-74: operational drift
-- below 50: unsafe
-
-## How To Run
-
-Analyze the sample file:
+IMPORTANT: 'updates.json' is a placeholder file name. To use self generated logs/datastream, replace 'updates.json' with the respective json file :
 
 ```bash
-python operational_drift_monitor.py --input events.json
+python operational_drift_monitor.py --input updates.json --full
 ```
 
-Analyze a generated event stream:
+This writes the dashboard to `dashboard.html` and opens it automatically.
+
+If you want to generate the dashboard without opening the browser:
 
 ```bash
-python operational_drift_monitor.py --input data/stream_events.json
+python operational_drift_monitor.py --input updates.json --full --no-open
 ```
 
-By default, the monitor saves state beside the input file. This lets the next run analyze only new events and compare the new metrics with the previous run.
+Run the parser separately only if you want to inspect the parsed fields:
 
-For a one-off full-file analysis:
+```bash
+python operational_update_parser.py --input updates.json --output parsed_updates.json
+```
+
+Then you can monitor that parsed output:
+
+```bash
+python operational_drift_monitor.py --input parsed_updates.json --full
+```
+
+## Run The Monitor
+
+Analyze the sample event file:
 
 ```bash
 python operational_drift_monitor.py --input events.json --full
 ```
 
-## Generate A Stream
+During a full demo run, it opens the dashboard automatically.
+
+Use `--full` only when you want a one-off full-file analysis.
+Scheduled runs should usually omit `--full`, so they update the dashboard without opening a browser every time.
+
+
+Use a different dashboard filename if needed:
+
+```bash
+python operational_drift_monitor.py --input parsed_updates.json --full --dashboard my_dashboard.html
+```
+
+## Scheduled Runs
+
+For actual monitoring, run the monitor regularly with Windows Task Scheduler or another scheduler:
+
+```bash
+python operational_drift_monitor.py --input data/stream_updates.json
+```
+
+By default, the monitor saves state beside the input file. The next run only checks events newer than the last analyzed timestamp and compares them with the previous run.
+
+
+
+## 5-Line Governance Summary
+
+The dashboard includes a compressed 5-line governance summary:
+
+1. Status
+2. Pressure
+3. Drift taxonomy counts
+4. Primary risk labels
+5. Recommended action
+
+
+## Test Event Generator
 
 `event_stream_generator.py` is only a testing helper.
 
-It creates fake operational events so the monitor can be tested without connecting to a real system.
+It creates fake raw operational updates so the parser and monitor can be tested without connecting to a real system.
 
-For actual use, you do not need this generator. Use your own JSON file or your own program that keeps writing operational events in the expected format.
+For actual use, you do not need this generator. Use your own JSON file or your own program that keeps writing operational updates in the expected format.
 
-Generate a growing event file:
+
+Generate a test stream:
 
 ```bash
-python event_stream_generator.py --output data/stream_events.json --reset --max-events 25
+python event_stream_generator.py --output data/stream_updates.json --reset --max-events 25 --interval-seconds 0 --jitter-seconds 0
 ```
 
-Generate a continuous stream:
+Then generate a dashboard from that stream:
 
 ```bash
-python event_stream_generator.py --output data/stream_events.json
+python operational_drift_monitor.py --input data/stream_updates.json
+```
+
+Generate a continuous test stream:
+
+```bash
+python event_stream_generator.py --output data/stream_updates.json
 ```
 
 Stop the continuous stream with `Ctrl+C`.
 
-## Scheduled Runs
-
-Use Windows Task Scheduler or another scheduler to run the monitor regularly.
-
-Example scheduled command:
+One-command generated raw update demo:
 
 ```bash
-python operational_drift_monitor.py --input data/stream_events.json
+python event_stream_generator.py --output data/stream_updates_demo.json --reset --max-events 50 --quiet --interval-seconds 0 --jitter-seconds 0; python operational_drift_monitor.py --input data/stream_updates_demo.json --full
 ```
 
-How it works:
+## Test With A Raw Log URL
 
-- first scheduled run stores a baseline
-- next scheduled run checks only new events
-- it compares the new event count with the previous event count
-- it compares the four metric percentages
-- it reports whether the metrics stayed stable when pressure increased
+The monitor can read a limited number of raw text lines directly from a URL.
+Each line is treated as one raw operational update.
+This is generic URL input; there is no dataset-specific parser.
+
+Rootly Apache error log example:
+
+```bash
+python operational_drift_monitor.py --input-url https://raw.githubusercontent.com/Rootly-AI-Labs/logs-dataset/main/apache/apache_error.log --limit-lines 300 --full
+```
+
+Apache access log example:
+
+```bash
+python operational_drift_monitor.py --input-url https://raw.githubusercontent.com/Rootly-AI-Labs/logs-dataset/main/apache/apache_access.log --limit-lines 300 --full
+```
+
+The program reads only the requested number of lines, converts each line into a raw update, parses it with the same rule-based update parser, and writes the dashboard.
 
 ## Input Format
 
-Each event should look roughly like this:
+The monitor accepts raw operational updates, parsed updates, or structured events.
+
+Raw operational update example:
+
+```json
+{
+  "update_id": "UPD-001",
+  "timestamp": "2026-05-24T10:00:00Z",
+  "text": "Checkout latency is degraded. Missing trace and approval pending."
+}
+```
+
+Structured event example:
 
 ```json
 {
@@ -150,10 +220,34 @@ Each event should look roughly like this:
 }
 ```
 
-The input file can be a list of events, or an object with an `events` list.
+Parsed operational update example:
+
+```json
+{
+  "event_id": "UPD-001",
+  "timestamp": "2026-05-24T10:00:00Z",
+  "raw_update": "Checkout latency is degraded. Missing trace and approval pending.",
+  "system_status": "degraded",
+  "blockers": ["pending"],
+  "dependencies": [],
+  "replay_risks": [],
+  "observability_risks": ["missing trace"],
+  "governance_risks": ["approval pending"],
+  "drift_classification": "authority-risk"
+}
+```
+
+## Files
+
+- `operational_update_parser.py`: parses raw updates
+- `operational_drift_monitor.py`: evaluates drift and writes the HTML dashboard
+- `event_stream_generator.py`: fake raw update stream generator for testing only
+- `dashboard.html`: generated dashboard evidence
+- `dashboard.css`: generated dashboard styling
+- `REVIEW_PACKET.md`: architecture, limitations, and reflection
 
 ## Conclusion
 
-If event count increases and the four percentages stay stable, operational intelligence is holding up under pressure.
+If event count increases and the four metric percentages stay stable, operational intelligence is holding up under pressure.
 
 If event count increases and any of the four percentages drop, operational drift is happening.

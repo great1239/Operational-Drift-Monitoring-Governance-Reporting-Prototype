@@ -1,63 +1,87 @@
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
+import os
 import random
 import time
 from pathlib import Path
 
 
-EVENT_TEMPLATES = [
+SERVICES = [
+    "Checkout",
+    "Payment",
+    "Search",
+    "Auth",
+    "Billing",
+    "Inventory",
+    "Notification",
+]
+
+DEPENDENCIES = [
+    "auth",
+    "payments",
+    "vendor",
+    "database",
+    "downstream",
+    "upstream",
+]
+
+ALIGNED_UPDATE_TEMPLATES = [
     {
-        "classification": "warning",
-        "action": "restart_service",
-        "owner": "ops-team",
-        "approval_required": False,
+        "label": "aligned",
+        "text": "{service} service is healthy. Work is flowing normally. Trace, evidence, and decision log are present.",
     },
     {
-        "classification": "warning",
-        "action": "scale_workers",
-        "owner": "ops-team",
-        "approval_required": False,
+        "label": "aligned",
+        "text": "{service} workflow is stable. Runbook action matched the expected action. Evidence is attached.",
     },
     {
-        "classification": "review",
-        "action": "open_ticket",
-        "owner": "support-team",
-        "approval_required": False,
-    },
-    {
-        "classification": "critical",
-        "action": "rollback_release",
-        "owner": "release-team",
-        "approval_required": True,
-    },
-    {
-        "classification": "critical",
-        "action": "grant_access",
-        "owner": "security-team",
-        "approval_required": True,
-    },
-    {
-        "classification": "critical",
-        "action": "manual_override",
-        "owner": "ops-team",
-        "approval_required": True,
-    },
-    {
-        "classification": "critical",
-        "action": "disable_alerts",
-        "owner": "ops-team",
-        "approval_required": True,
+        "label": "aligned",
+        "text": "{service} queue is normal. The team completed the check and the decision log is present.",
     },
 ]
 
-DRIFT_TYPES = [
-    "missing_trace",
-    "missing_evidence",
-    "replay_mismatch",
-    "approval_pending",
-    "unauthorized_actor",
-    "missing_owner",
+RISK_UPDATE_TEMPLATES = [
+    {
+        "label": "integration-risk",
+        "text": "{service} service is slow. Team is blocked by {dependency} API errors and waiting for database confirmation.",
+    },
+    {
+        "label": "integration-risk",
+        "text": "{service} deployment is stuck. It depends on the {dependency} integration and cannot proceed.",
+    },
+    {
+        "label": "replay-risk",
+        "text": "{service} rollback completed, but replay produced a different result. Expected action mismatch and rerun failed.",
+    },
+    {
+        "label": "replay-risk",
+        "text": "{service} mitigation cannot reproduce the same result on replay. Rerun failed during validation.",
+    },
+    {
+        "label": "observability-risk",
+        "text": "{service} service is degraded. Missing trace and missing evidence for the decision. No log was attached.",
+    },
+    {
+        "label": "observability-risk",
+        "text": "{service} alert is noisy. Trace missing and no evidence was attached to the update.",
+    },
+    {
+        "label": "authority-risk",
+        "text": "{service} access change used manual override. Actor was unauthorized and approval missing.",
+    },
+    {
+        "label": "authority-risk",
+        "text": "{service} policy exception was applied without approval. Approval not recorded before execution.",
+    },
+    {
+        "label": "unclear/incomplete",
+        "text": "Looking into it.",
+    },
+    {
+        "label": "unclear/incomplete",
+        "text": "Checking now.",
+    },
 ]
 
 
@@ -97,11 +121,12 @@ def non_negative_float(value):
     return parsed
 
 
-def utc_timestamp():
-    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+def utc_timestamp(sequence):
+    timestamp = datetime.now(timezone.utc) + timedelta(microseconds=sequence)
+    return timestamp.isoformat(timespec="microseconds").replace("+00:00", "Z")
 
 
-def load_existing_events(path):
+def load_existing_updates(path):
     if not path.exists() or path.stat().st_size == 0:
         return []
 
@@ -111,95 +136,87 @@ def load_existing_events(path):
     if isinstance(data, list):
         return data
 
+    if isinstance(data, dict) and isinstance(data.get("updates"), list):
+        return data["updates"]
+
     if isinstance(data, dict) and isinstance(data.get("events"), list):
         return data["events"]
 
-    raise ValueError("stream file must be a JSON list or an object with an events list")
+    raise ValueError("stream file must be a JSON list or an object with an updates list")
 
 
-def write_events(path, events):
+def write_updates(path, updates):
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path = path.with_name(f"{path.name}.tmp")
+    temporary_path = path.with_name(f"{path.name}.{os.getpid()}.tmp")
 
     with temporary_path.open("w", encoding="utf-8") as file:
-        json.dump(events, file, indent=2)
+        json.dump(updates, file, indent=2)
         file.write("\n")
 
-    temporary_path.replace(path)
+    for attempt in range(5):
+        try:
+            temporary_path.replace(path)
+            return
+        except PermissionError as error:
+            if attempt == 4:
+                try:
+                    temporary_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
+
+                raise PermissionError(
+                    f"Could not update {path}. Close the JSON file if it is open, "
+                    "pause OneDrive sync if needed, or use a different --output file."
+                ) from error
+
+            time.sleep(0.25)
 
 
 def next_sequence(existing_events):
     highest = 0
 
     for event in existing_events:
-        event_id = str(event.get("event_id", ""))
+        event_id = str(event.get("update_id", event.get("event_id", "")))
         prefix, separator, suffix = event_id.partition("-")
 
-        if prefix == "EVT" and separator and suffix.isdigit():
+        if prefix in ("UPD", "EVT") and separator and suffix.isdigit():
             highest = max(highest, int(suffix))
 
     return highest + 1
 
 
-def base_event(sequence, rng):
-    template = rng.choice(EVENT_TEMPLATES)
-    approval_required = template["approval_required"]
-
-    return {
-        "event_id": f"EVT-{sequence:06d}",
-        "timestamp": utc_timestamp(),
-        "classification": template["classification"],
-        "action": template["action"],
-        "owner": template["owner"],
-        "trace_id": f"TRACE-{sequence:06d}",
-        "evidence_id": f"EVID-{sequence:06d}",
-        "approval_required": approval_required,
-        "approval_status": "approved" if approval_required else "not_required",
-        "authorized_actor": True,
-        "replay_expected_action": template["action"],
-    }
+def render_template(template, rng):
+    return template["text"].format(
+        service=rng.choice(SERVICES),
+        dependency=rng.choice(DEPENDENCIES),
+    )
 
 
-def inject_drift(event, rng):
-    drift_type = rng.choice(DRIFT_TYPES)
-
-    if drift_type == "missing_trace":
-        event["trace_id"] = ""
-    elif drift_type == "missing_evidence":
-        event["evidence_id"] = ""
-    elif drift_type == "replay_mismatch":
-        event["replay_expected_action"] = "hold_action"
-    elif drift_type == "approval_pending":
-        event["approval_required"] = True
-        event["approval_status"] = rng.choice(["pending", "rejected", "missing"])
-    elif drift_type == "unauthorized_actor":
-        event["authorized_actor"] = False
-    elif drift_type == "missing_owner":
-        event["owner"] = ""
-
-    event["simulated_drift"] = drift_type
-
-
-def build_event(sequence, rng, drift_rate):
-    event = base_event(sequence, rng)
-
+def build_update(sequence, rng, drift_rate):
     if rng.random() < drift_rate:
-        inject_drift(event, rng)
+        template = rng.choice(RISK_UPDATE_TEMPLATES)
+    else:
+        template = rng.choice(ALIGNED_UPDATE_TEMPLATES)
 
-    return event
+    update = {
+        "update_id": f"UPD-{sequence:06d}",
+        "timestamp": utc_timestamp(sequence),
+        "text": render_template(template, rng),
+    }
+    return update, template["label"]
 
 
-def stream_events(args):
+def stream_updates(args):
     output_path = Path(args.output)
     rng = random.Random(args.seed)
-    existing_events = [] if args.reset else load_existing_events(output_path)
-    next_event_number = next_sequence(existing_events)
+    existing_updates = [] if args.reset else load_existing_updates(output_path)
+    next_update_number = next_sequence(existing_updates)
     emitted = 0
 
     if args.reset or not output_path.exists():
-        write_events(output_path, existing_events)
+        write_updates(output_path, existing_updates)
 
-    print(f"Streaming events into {output_path}")
+    print(f"Streaming raw updates into {output_path}")
     print("Press Ctrl+C to stop.")
 
     while args.max_events is None or emitted < args.max_events:
@@ -211,18 +228,17 @@ def stream_events(args):
             if args.max_events is not None and emitted >= args.max_events:
                 break
 
-            event = build_event(next_event_number, rng, args.drift_rate)
-            existing_events.append(event)
-            write_events(output_path, existing_events)
+            update, label = build_update(next_update_number, rng, args.drift_rate)
+            existing_updates.append(update)
+            write_updates(output_path, existing_updates)
 
             emitted += 1
-            next_event_number += 1
+            next_update_number += 1
 
             if not args.quiet:
-                drift_label = event.get("simulated_drift", "none")
                 print(
-                    f"{event['timestamp']} {event['event_id']} "
-                    f"{event['classification']} {event['action']} drift={drift_label}"
+                    f"{update['timestamp']} {update['update_id']} "
+                    f"class={label} text={update['text']}"
                 )
 
         if args.max_events is not None and emitted >= args.max_events:
@@ -234,23 +250,23 @@ def stream_events(args):
 
         time.sleep(max(delay, 0))
 
-    print(f"Generated {emitted} event(s).")
+    print(f"Generated {emitted} raw update(s).")
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Continuously generate operational events into a JSON file."
+        description="Continuously generate raw operational updates into a JSON file."
     )
     parser.add_argument(
         "--output",
-        default="data/stream_events.json",
+        default="data/stream_updates.json",
         help="JSON file to create or append to",
     )
     parser.add_argument(
         "--interval-seconds",
         type=non_negative_float,
         default=1.0,
-        help="Seconds to wait between event batches",
+        help="Seconds to wait between update batches",
     )
     parser.add_argument(
         "--jitter-seconds",
@@ -260,26 +276,28 @@ def parse_args():
     )
     parser.add_argument(
         "--max-events",
+        "--max-updates",
+        dest="max_events",
         type=positive_int,
-        help="Stop after this many new events; omit to run until Ctrl+C",
+        help="Stop after this many new updates; omit to run until Ctrl+C",
     )
     parser.add_argument(
         "--drift-rate",
         type=probability,
         default=0.15,
-        help="Probability that a generated event contains one drift condition",
+        help="Probability that a generated update contains a risk or incomplete condition",
     )
     parser.add_argument(
         "--burst-chance",
         type=probability,
         default=0.2,
-        help="Probability that an interval emits a burst instead of one event",
+        help="Probability that an interval emits a burst instead of one update",
     )
     parser.add_argument(
         "--max-burst-events",
         type=positive_int,
         default=5,
-        help="Largest number of events generated during a burst",
+        help="Largest number of updates generated during a burst",
     )
     parser.add_argument(
         "--seed",
@@ -294,7 +312,7 @@ def parse_args():
     parser.add_argument(
         "--quiet",
         action="store_true",
-        help="Write events without printing each event",
+        help="Write updates without printing each update",
     )
     return parser.parse_args()
 
@@ -303,11 +321,11 @@ def main():
     args = parse_args()
 
     try:
-        stream_events(args)
+        stream_updates(args)
     except KeyboardInterrupt:
-        print("\nStopped event stream.")
+        print("\nStopped update stream.")
     except (OSError, ValueError, json.JSONDecodeError) as error:
-        print(f"Could not generate event stream: {error}")
+        print(f"Could not generate update stream: {error}")
 
 
 if __name__ == "__main__":

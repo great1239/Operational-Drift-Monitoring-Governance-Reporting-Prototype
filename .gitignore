@@ -2,5 +2,6 @@ __pycache__/
 *.pyc
 *.json
 !events.json
+!updates.json
 !.gitignore
 .monitor_state.json
